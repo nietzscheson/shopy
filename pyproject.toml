@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "shopy"
+version = "0.1.0"
+description = "Hexagonal Microservice Project with Python"
+authors = ["Cristian Angulo Nova <cristianangulonova@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.101.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+httpx = "^0.24.1"
+flake8 = "^6.1.0"
+black = "^23.7.0"
+isort = "^5.12.0"
+pre-commit = "^3.3.3"
+pylint = "^2.17.5"
+autoflake = "^2.2.0"
+pycln = "^2.2.2"
+typer = "^0.9.0"
+factory-boy = "^3.3.0"
+faker = "^19.3.0"
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+ignore = "E501,W503"
+max-line-length = 130
+extend-ignore = ["D203", "E203", "E251", "E266", "E302", "E305", "E401", "E402", "E501", "F401", "F403", "W503"]
+exclude = [".git", "__pycache__", "dist"]
+max-complexity = 10
+
+
+[tool.poetry.scripts]
+manage = "manage:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
