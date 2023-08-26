@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v4.4.0
     hooks:
     -   id: check-yaml
     -   id: end-of-file-fixer
@@ -21,6 +21,12 @@ repos:
     -   id: flake8
         entry: flake8 shopy
         exclude: ^tests/
+-   repo: local
+    hooks:
+    -   id: check-one-commit-per-pr
+        name: Check One Commit Per PR
+        entry: ./.hooks/one-commit-per-pr.sh
+        language: script
 #-   repo: https://github.com/pre-commit/mirrors-pylint
 #    rev: 'v2.6.0'
 #    hooks:
