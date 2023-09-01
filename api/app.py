@@ -1,18 +1,32 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Response
 
-from shopy.user.adapter.inmemory_user_repository import InmemoryUserRepository
+from api.depends.container_manager import container_manager
+from shopy.user.application.container.user_container import UserContainer
+from shopy.user.application.services.create import UserCreateService
+from shopy.user.domain.schemes.user_scheme import UserScheme
 from shopy.user.domain.user import User
 
 app = FastAPI()
 
-user_repository = InmemoryUserRepository()
-
 
 @app.post("/user", response_model=User)
-def user() -> User:
-    return User().save(user_repository)
+async def user(
+    payload: UserScheme,
+    response: Response,
+    container_use_case: UserContainer = Depends(container_manager(UserContainer)),
+) -> User:
+    _user = payload.model_dump()
 
+    async with container_use_case.main_container.unit_of_work():
+        user_create_service = UserCreateService(
+            user_repository=container_use_case.user_repository
+        )
+        await user_create_service(_user)
 
-@app.get("/users", response_model=int)
-def users() -> int:
-    return user_repository.total()
+        # uow.commit()
+
+    return _user
+    # container_use_case.user_repository.add(_user)
+    # container_use_case.main_container.session().commit()
+    # return "Hello"
+    # return User(_user)

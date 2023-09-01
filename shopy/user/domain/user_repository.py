@@ -6,7 +6,15 @@ from shopy.user.domain.user import User
 
 class UserRepository(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def add(self, user: User) -> User:
+    def one(self, id: str) -> User:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add(self, user: User) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def update(self, id: str, user: User) -> User:
         raise NotImplementedError
 
     @abc.abstractmethod
