@@ -20,7 +20,7 @@ repos:
     hooks:
     -   id: flake8
         entry: flake8 shopy
-        exclude: ^tests/
+        exclude: ^tests/|alembic/
 -   repo: local
     hooks:
     -   id: check-one-commit-per-pr
