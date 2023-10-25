@@ -10,7 +10,7 @@ class MainContainer(containers.DeclarativeContainer):
 
     database = providers.Singleton(Database, database_uri=config().DATABASE_URI)
 
-    session = providers.Resource(database.provided.get_db)
+    session = providers.Resource(database().get_db)
     unit_of_work = providers.Factory(
         SqlAlchemyUnitOfWork,
         session=session,

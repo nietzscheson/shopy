@@ -28,16 +28,12 @@ class Database:
         db = self.__AsyncSessionLocal()
         try:
             yield db
-
-            await db.close()
-            await self.__async_engine.dispose()
-
         except Exception as e:
             logger.error(e)
             await db.rollback()
             raise SQLAlchemyError(
                 status_code=500, detail=f"Error in the Database: {str(e)}"
             )
-
-
-# AsyncSession = Annotated[async_sessionmaker, Depends(Database.get_db)]
+        finally:
+            await db.close()
+            await self.__async_engine.dispose()
