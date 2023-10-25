@@ -1,13 +1,13 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from shopy.user.adapter.user_repository_sqlalchemy import SQLAlchemyUserRepository
+from shopy.user.adapter.user_repository_sqlalchemy import UserRepositorySQLAlchemy
 from tests.factories.user import UserFactory
 
 
 @pytest.mark.asyncio
 async def test_user_sqlalchemy_repository_add_and_one(db: AsyncSession):
-    user_repository = SQLAlchemyUserRepository(session=db)
+    user_repository = UserRepositorySQLAlchemy(session=db)
 
     user = UserFactory.create()
 
@@ -22,7 +22,7 @@ async def test_user_sqlalchemy_repository_add_and_one(db: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_user_sqlalchemy_repository_add_and_update(db: AsyncSession):
-    user_repository = SQLAlchemyUserRepository(session=db)
+    user_repository = UserRepositorySQLAlchemy(session=db)
 
     user = UserFactory.create()
 
@@ -45,7 +45,7 @@ async def test_user_sqlalchemy_repository_add_and_update(db: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_user_sqlalchemy_repository_all(db: AsyncSession):
-    user_repository = SQLAlchemyUserRepository(session=db)
+    user_repository = UserRepositorySQLAlchemy(session=db)
 
     assert len(await user_repository.all()) == 0
 
@@ -58,7 +58,7 @@ async def test_user_sqlalchemy_repository_all(db: AsyncSession):
 
 @pytest.mark.asyncio
 async def test_user_sqlalchemy_repository_add_and_delete(db: AsyncSession):
-    user_repository = SQLAlchemyUserRepository(session=db)
+    user_repository = UserRepositorySQLAlchemy(session=db)
 
     assert len(await user_repository.all()) == 0
 

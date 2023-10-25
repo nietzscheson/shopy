@@ -12,8 +12,7 @@ from tests.factories.user import UserFactory
 async def test_user_container(db):
     user_container = UserContainer()
 
-    unit_of_work = await user_container.main_container.unit_of_work()
-    async with unit_of_work as uow:
+    async with await user_container.main_container.unit_of_work() as uow:
         _user_factory = UserFactory.build()
         _user_scheme = UserScheme(name=_user_factory.name)
 
