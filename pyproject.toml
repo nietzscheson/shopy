@@ -33,6 +33,7 @@ faker = "^19.3.0"
 pytest-asyncio = "^0.21.1"
 pytest-xdist = "^3.3.1"
 aiosqlite = "^0.19.0"
+debugpy = "^1.8.0"
 
 [tool.isort]
 profile = "black"
@@ -44,6 +45,11 @@ extend-ignore = ["D203", "E203", "E251", "E266", "E302", "E305", "E401", "E402",
 exclude = [".git", "__pycache__", "dist"]
 max-complexity = 10
 
+[tool.pytest.ini_options]
+addopts = "-p no:logging"
+markers = [
+    "debug: Description of the marker."
+]
 
 [tool.poetry.scripts]
 manage = "manage:app"

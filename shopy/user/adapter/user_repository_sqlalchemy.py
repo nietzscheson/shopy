@@ -1,4 +1,5 @@
-from typing import List
+from contextlib import AbstractAsyncContextManager
+from typing import Callable, Iterator, List
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,18 +9,24 @@ from shopy.user.domain.user_repository import UserRepository
 
 
 class UserRepositorySQLAlchemy(UserRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
+    def __init__(
+        self, session: Callable[..., AbstractAsyncContextManager[AsyncSession]]
+    ) -> None:
+        self.session = session()
 
     async def one(self, id: str) -> User:
         query = select(User).where(User.id == id)
 
-        result = await self.session.execute(query)
+        async with self.session as session:
+            result = await session.execute(query)
 
-        return result.scalars().first()
+            return result.scalars().first()
 
     async def add(self, user: User) -> None:
-        self.session.add(user)
+        async with self.session as session:
+            print("User Session", session)
+            session.add(user)
+            # await session.commit()
 
     async def update(self, id: str, user: User) -> User:
         query = select(User).where(User.id == id)

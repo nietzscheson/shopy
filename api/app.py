@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, Response
+from fastapi import Depends, FastAPI, HTTPException
 
 from api.depends.container_manager import container_manager
 from shopy.user.application.container.user_container import UserContainer
@@ -12,21 +12,35 @@ app = FastAPI()
 @app.post("/user", response_model=User)
 async def user(
     payload: UserScheme,
-    response: Response,
     container_use_case: UserContainer = Depends(container_manager(UserContainer)),
 ) -> User:
     _user = payload.model_dump()
 
-    async with container_use_case.main_container.unit_of_work():
-        user_create_service = UserCreateService(
-            user_repository=container_use_case.user_repository
-        )
-        await user_create_service(_user)
+    try:
+        unit_of_work = await container_use_case.main_container.unit_of_work()
+        async with unit_of_work as uow:
+            user_create_service = UserCreateService(
+                user_repository=await container_use_case.user_repository()
+            )
+            await user_create_service(user_scheme=payload)
+            await uow.commit()
 
-        # uow.commit()
+        return _user
+
+    except Exception as e:
+        # Handle specific exceptions and return custom error responses if needed
+        raise HTTPException(status_code=400, detail=str(e))
+
+    # query = select(User).where(User.name == _user_factory.name)
+
+    # _user = await db.execute(query.limit(1))
+
+    # assert _user_factory.name == _user.scalar().name
+    #    async with await container_use_case.main_container.unit_of_work() as uow:
+    #        user_create_service = UserCreateService(
+    #            user_repository=await container_use_case.user_repository()
+    #        )
+    #        await user_create_service(user_scheme=payload)
+    #        await uow.commit()
 
     return _user
-    # container_use_case.user_repository.add(_user)
-    # container_use_case.main_container.session().commit()
-    # return "Hello"
-    # return User(_user)
