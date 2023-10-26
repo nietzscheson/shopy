@@ -1,6 +1,6 @@
+from dependency_injector.wiring import inject
 from fastapi import Depends, FastAPI, Response
 
-from api.depends.container_manager import container_manager
 from shopy.user.application.container.user_container import UserContainer
 from shopy.user.application.services.create import UserCreateService
 from shopy.user.domain.schemes.user_scheme import UserScheme
@@ -10,23 +10,19 @@ app = FastAPI()
 
 
 @app.post("/user", response_model=User)
+@inject
 async def user(
     payload: UserScheme,
     response: Response,
-    container_use_case: UserContainer = Depends(container_manager(UserContainer)),
+    container_use_case: UserContainer = Depends(UserContainer),
 ) -> User:
     _user = payload.model_dump()
 
-    async with container_use_case.main_container.unit_of_work():
+    async with await container_use_case.main_container.unit_of_work() as uow:
         user_create_service = UserCreateService(
-            user_repository=container_use_case.user_repository
+            user_repository=await container_use_case.user_repository()
         )
-        await user_create_service(_user)
-
-        # uow.commit()
+        await user_create_service(user_scheme=payload)
+        await uow.commit()
 
     return _user
-    # container_use_case.user_repository.add(_user)
-    # container_use_case.main_container.session().commit()
-    # return "Hello"
-    # return User(_user)

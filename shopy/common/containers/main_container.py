@@ -1,13 +1,16 @@
 from dependency_injector import containers, providers
 
-from shopy.common.infrastructure.database import database
+from shopy.common.infrastructure.database import Database
 from shopy.common.infrastructure.unit_of_work import SqlAlchemyUnitOfWork
+from shopy.common.settings import Settings
 
 
 class MainContainer(containers.DeclarativeContainer):
-    # config = providers.Configuration(pydantic_settings=[settings])
+    config = providers.Singleton(Settings)
 
-    session = providers.Resource(database.get_db)
+    database = providers.Singleton(Database, database_uri=config().DATABASE_URI)
+
+    session = providers.Resource(database().get_db)
     unit_of_work = providers.Factory(
         SqlAlchemyUnitOfWork,
         session=session,

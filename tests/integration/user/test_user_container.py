@@ -17,14 +17,14 @@ async def test_user_container(db):
         _user_factory = UserFactory.build()
         _user_scheme = UserScheme(name=_user_factory.name)
 
-        user_service = UserCreateService(
+        user_create_service = UserCreateService(
             user_repository=await user_container.user_repository()
         )
-        await user_service(user_scheme=_user_scheme)
+        await user_create_service(user_scheme=_user_scheme)
         await uow.commit()
 
         query = select(User).where(User.name == _user_factory.name)
 
-        _user = await db.execute(query.limit(1))
+    _user = await db.execute(query.limit(1))
 
-        assert _user_factory.name == _user.scalar().name
+    assert _user_factory.name == _user.scalar().name

@@ -9,7 +9,8 @@ class SqlAlchemyUnitOfWork(AbstractUnitOfWork):
         return self
 
     async def __aexit__(self, *args):
-        pass
+        await super().__aexit__(*args)
+        await self.session.close()
 
     async def _commit(self):
         await self.session.commit()
