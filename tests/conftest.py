@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import clear_mappers
 
 from api.app import app
-from shopy.common.infrastructure.database import database
+from shopy.common.containers.main_container import MainContainer
 from shopy.common.infrastructure.mappers import mappers
 
 
@@ -33,5 +33,7 @@ def apply_migrations(start_mappers):
 
 @pytest_asyncio.fixture
 async def db(apply_migrations):
-    async for session in database.get_db():
+    main_container = MainContainer()
+
+    async for session in main_container.database().get_db():
         yield session
